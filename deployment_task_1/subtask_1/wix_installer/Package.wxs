@@ -1,0 +1,35 @@
+<!-- Build command: wix build .\wix_installer\Package.wxs -o .\wix_installer\subtask_1.msi -->
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+    <Package
+        Name="Subtask 1"
+        Manufacturer="Swinny Student"
+        Version="1.0.0"
+        UpgradeCode="1fcbd3fc-9380-4898-b478-67c0b69623c1">
+
+        <MajorUpgrade
+            DowngradeErrorMessage="A newer version of Subtask 1 is already installed." />
+
+        <MediaTemplate />
+
+        <StandardDirectory Id="ProgramFilesFolder">
+            <Directory Id="INSTALLFOLDER" Name="subtask_1" />
+        </StandardDirectory>
+
+        <Feature Id="MainFeature" Title="subtask_1" Level="1">
+            <ComponentGroupRef Id="AppFiles" />
+        </Feature>
+
+    </Package>
+
+    <Fragment>
+        <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+            <File Source=".\bin\Release\net8.0\subtask_1.exe" />
+            <File Source=".\bin\Release\net8.0\subtask_1.dll" />
+            <File Source=".\bin\Release\net8.0\subtask_1.deps.json" />
+            <File Source=".\bin\Release\net8.0\subtask_1.runtimeconfig.json" />
+        </ComponentGroup>
+    </Fragment>
+
+</Wix>

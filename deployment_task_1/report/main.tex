@@ -1,0 +1,147 @@
+\documentclass{article}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[style=apa, sorting=nyt]{biblatex}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{a4paper, margin=1in}
+% \addbibresource{references.bib}
+
+\begin{document}
+
+% ---------- Cover page ----------
+\begin{titlepage}
+\begin{center}
+\vspace*{1cm}
+
+Swinburne University of Technology \\
+School of Science, Computing, and Emerging Technologies
+\vspace{8cm}
+
+SWE40006 - Software Deployment and Evolution \\
+\textbf{Deployment Portfolio Task 1}
+\vfill
+
+Student name: Ngoc Van Nhi Do \\
+Student ID: 105551765
+\end{center}
+\end{titlepage}
+
+% ---------- Header + footer ----------
+\pagestyle{fancy}
+\fancyhead[L]{Ngoc Van Nhi Do}
+\fancyhead[R]{105551765}
+\fancyfoot{}
+\renewcommand{\footrulewidth}{0.4pt}% default is 0pt
+\fancyfoot[L]{SWE40006 - Software Deployment and Evolution (Semester 2 2026 - Due August 18, 2026)}
+\fancyfoot[R]{\small\thepage}
+
+\newpage
+
+\begin{center}
+\vspace*{2px}
+{\LARGE
+\setlength{\baselineskip}{2em}
+Deployment Portfolio Task 1
+}
+\end{center}
+
+\section{Declared Target Level}
+
+All four subtasks 1.1, 1.2, 1.3, and 1.4 were attempted.
+
+\section{Execution Evidence}
+\subsection{Task 1.1}
+I built and packaged a sample console application into an .msi installer using WiX 7.0.0 via the Command-line Interface (CLI).
+
+The first step was creating a new C\# project, adding the provided code, and building it in Release mode.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_create_project.jpg}
+\vspace{-1em}
+\caption{Creating a new C\# console application.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_name_project.jpg}
+\vspace{-1em}
+\caption{Naming the application.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_build_project.jpg}
+\vspace{-1em}
+\caption{Building the program in Release mode.}
+\end{figure}
+
+Once the program has been built, its executable is created the project's \texttt{bin\\Release} folder.
+
+The WiX toolset was installed using the CLI.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_install_wix.jpg}
+\vspace{-1em}
+\caption{Installing WiX.}
+\end{figure}
+
+The WiX project and source file were manually created. The \texttt{.wxs} file was then configured to contain instructions to build the installer.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_create_wix.jpg}
+\vspace{-1em}
+\caption{Creating the WiX installer project and source file.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_create_wxs.jpg}
+\vspace{-1em}
+\caption{Configuring the Package.wxs file to build the installer.}
+\end{figure}
+
+The installer is then built using the command below. The resulting MSI file is created inside the installer directory.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_build_msi.jpg}
+\vspace{-1em}
+\caption{Building the installer from the WiX source file.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_msi.jpg}
+\vspace{-1em}
+\caption{The MSI file is created.}
+\end{figure}
+
+Running the installer \texttt{subtask\_1.msi} installs the application. The screenshot below shows that the app is successfully installed in the Program Files(x86) folder and runs as expected.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_run_app.jpg}
+\vspace{-1em}
+\caption{Running the console application after it has been installed.}
+\end{figure}
+
+The application \texttt{subtask\_1} is finally uninstalled.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_uninstall_app.jpg}
+\vspace{-1em}
+\caption{Uninstalling the application.}
+\end{figure}
+
+% References
+% \printbibliography
+\end{document}
