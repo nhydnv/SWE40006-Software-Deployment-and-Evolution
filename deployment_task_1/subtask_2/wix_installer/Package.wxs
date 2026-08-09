@@ -1,0 +1,32 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+    <Package
+        Name="Subtask 2"
+        Manufacturer="Swinny Student"
+        Version="1.0.0"
+        UpgradeCode="dbcaa970-3394-4f67-8cee-8c78d2d860c3">
+
+        <MajorUpgrade
+            DowngradeErrorMessage="A newer version of subtask_2 is already installed." />
+
+        <MediaTemplate />
+
+        <StandardDirectory Id="ProgramFilesFolder">
+            <Directory Id="INSTALLFOLDER" Name="subtask_2" />
+        </StandardDirectory>
+
+        <Feature Id="MainFeature" Title="subtask_2" Level="1">
+            <ComponentGroupRef Id="AppFiles" />
+        </Feature>
+
+    </Package>
+
+    <Fragment>
+        <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+            <Component Id="Application">
+                <File Source=".\x64\Release\subtask_2.exe" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+
+</Wix>

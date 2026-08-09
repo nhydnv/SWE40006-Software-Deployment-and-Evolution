@@ -5,6 +5,9 @@ obj/
 *.wixpdb
 *.cab
 
+x64/
+*.vcxproj.user
+
 *.aux
 *.bbl
 *.bcf
