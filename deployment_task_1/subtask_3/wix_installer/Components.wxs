@@ -1,0 +1,35 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+		
+	  <Component Id="MainExe" Guid="4bb85ae3-0607-422f-adc9-4854b88587b4">
+        <File Source="../publish/subtask_3.exe" />
+	  </Component>
+
+	  <Component Id="MainDll" Guid="a3fe5f35-db09-4b6d-9978-438e8afb26e5">
+		<File Source="../publish/subtask_3.dll" />
+	  </Component>
+		
+	  <Component Id="MainDepsJson" Guid="89180be1-dfe1-4df1-aa5b-02b6ced402a1">
+		  <File Source="../publish/subtask_3.deps.json" />
+	  </Component>
+
+	  <Component Id="MainRuntimeConfigJson" Guid="eca9f9b2-a05f-4c5a-86a7-b8d9f25cfa1b">
+		  <File Source="../publish/subtask_3.runtimeconfig.json" />
+	  </Component>
+
+	  <Component Id="NewtonsoftJsonDll" Guid="cf1a09ea-6075-463f-8cd3-d8ba4b3b8177">
+		  <File Source="../publish/Newtonsoft.Json.dll" />
+	  </Component>
+
+	  <Component Id="SerilogDll" Guid="a93b1bd1-977b-49c6-9060-964f577c9fca">
+		  <File Source="../publish/Serilog.dll" />
+	  </Component>
+
+	  <Component Id="SerilogSinksFileDll" Guid="bf040c30-71cb-46e5-b087-b633eca17922">
+		  <File Source="../publish/Serilog.Sinks.File.dll" />
+	  </Component>
+
+    </ComponentGroup>
+  </Fragment>L
+</Wix>

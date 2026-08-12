@@ -1,12 +1,15 @@
 .vs
 bin/
 obj/
+publish/
 *.msi
 *.wixpdb
 *.cab
+*.config
 
 x64/
 *.vcxproj.user
+*.csproj.user
 
 *.aux
 *.bbl

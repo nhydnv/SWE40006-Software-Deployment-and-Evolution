@@ -1,0 +1,15 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package 
+	  Name="wix_installer" 
+	  Manufacturer="Swinny Student" 
+	  Version="1.0.0"
+	  UpgradeCode="6cfe7b8a-2370-4362-bf73-47880ca6a55f">
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Subtask 3 is already installed." />
+
+	<MediaTemplate/>
+
+    <Feature Id="MainFeature" Title="Subtask 3" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+  </Package>
+</Wix>

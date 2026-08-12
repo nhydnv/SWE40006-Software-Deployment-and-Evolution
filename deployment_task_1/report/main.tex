@@ -52,7 +52,7 @@ Deployment Portfolio Task 1
 
 \section{Declared Target Level}
 
-All four subtasks 1.1, 1.2, 1.3, and 1.4 were attempted.
+All four subtasks 1.1, 1.2, 1.3, and 1.4 were attempted. The technologies used include Visual Studio 2022 (v.17.14.37), WiX v7, and the HeatWave extension installed on the IDE.
 
 \section{Execution Evidence}
 \subsection{Task 1.1}
@@ -207,6 +207,69 @@ Running the MSI package installs the app in the Program Files(x86) folder. The a
 \vspace{-1em}
 \caption{Uninstalling the application.}
 \end{figure}
+
+\subsection{Task 1.3}
+The application created for subtask 1.3 is a simple WinForms application, making the use of the packages \texttt{Newtonsoft.Json} and \texttt{Serilog} to demonstrate the packaging of multiple external DLLs.
+
+First, I created the WinForms application using the template provided in Visual Studio.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_create_project.jpg}
+\vspace{-1em}
+\caption{Creating a new WinForms project.}
+\end{figure}
+
+The application simply displays a window with a button which shows a messages and logs some information when it is clicked. The screenshot below shows that it compiles and runs successfully.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_build_project.jpg}
+\vspace{-1em}
+\caption{The app successfully runs.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_publish_project.jpg}
+\vspace{-1em}
+\caption{The project is published into a \texttt{publish} directory The Solution Explorer on the right shows that the executable, runtime dependencies, and DLLs were created.}
+\end{figure}
+
+Next, I created a new WiX project, this time using the template provided by the HeatWave extension.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_create_wix.jpg}
+\vspace{-1em}
+\caption{Creating a new WiX MSI Package project.}
+\end{figure}
+
+The \texttt{Components.wxs} file was configured to include the build outputs. This was done by authoring \texttt{<Component>} tags for each file, including the main executable, the DLL files, and others. Other build configurations were written in \texttt{Package.wxs} and \texttt{Folders.wxs}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_create_wxs.jpg}
+\vspace{-1em}
+\caption{Writing the executable, DLLs, and dependencies into the script. These files would be included in the final MSI package.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{images/3_build_msi.jpg}
+\vspace{-1em}
+\caption{The WiX project is built to create an MSI package.}
+\end{figure}
+
+The application is installed in the Program Files folder, since the platform architecture is specified as 64-bit in the build command this time. The screenshot below proves that the app was installed and executed without any errors.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.35]{images/3_run_app.jpg}
+\vspace{-1em}
+\caption{The application is installed using the MSI package and runs successfully.}
+\end{figure}
+
 
 % References
 % \printbibliography
