@@ -152,7 +152,7 @@ The installer is then built using the command below. The resulting MSI file is c
 \caption{The MSI file is created.}
 \end{figure}
 
-Running the installer \texttt{subtask\_1.msi} installs the application. The screenshot below shows that the app is successfully installed in the Program Files folder and runs as expected.
+Running the installer \texttt{subtask\_1.msi} installs the application. The screenshot below shows that the app is successfully installed in the Program Files folder and runs as expected. In the first few attempts, the executable had been installed in the Program Files (x86) folder instead, which was not ideal considering that it was a 64-bit application. This was resolved by adding the \texttt{-arch x64} flag to the \texttt{wix build} command to specify the target platform.
 
 \begin{figure}[H]
 \centering
@@ -368,7 +368,9 @@ Before the pull request could be resolved, the package manager needs to run test
 \caption{The WinGet validator checking the contents of my pull request before merging it to the master branch.}
 \end{figure}
 
-All the automated validation checks for the pull request passed succesfully; however, it still needs to be manually reviewed and approved by a community moderator before the package is available on the WinGet catalogue. In the meantine, a local installation using the exact same manifest submitted in the pull request was done to test verify that the package installs and functions correctly.
+Originally, my WinGet submission was failling the installation validation check (\texttt{Validation-Shell-Execute}) because my WiX-built MSI referenced an external cabinet (\texttt{.cab}) file. WiX's default behaviour was to write the compressed app files into a separate \texttt{cab1.cab} file that has to sit next to the \texttt{.msi} file at install time, rather than embedding them inside the \texttt{.msi} itself. Since only the standalone MSI file was uploaded to Github Release, \texttt{msiexec} failed because it couldn't find the accompanying cabinet file containing the actual application files. This was resolved by adding \texttt{<MediaTemplate EmbedCab="yes"/>} to my \texttt{.wxs} script to create a self-contained \texttt{.msi}.
+
+With this fix, all the automated validation checks for the pull request passed succesfully; however, it still needs to be manually reviewed and approved by a community moderator before the package is available on the WinGet catalogue. In the meantine, a local installation using the exact same manifest submitted in the pull request was done to test verify that the package installs and functions correctly.
 
 \begin{figure}[H]
 \centering
