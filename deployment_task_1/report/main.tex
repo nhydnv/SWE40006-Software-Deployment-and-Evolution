@@ -13,7 +13,7 @@
 
 \begin{document}
 
-% ---------- Cover page ----------
+% ---------- Cover page ---64-------
 \begin{titlepage}
 \begin{center}
 \vspace*{1cm}
@@ -27,7 +27,8 @@ SWE40006 - Software Deployment and Evolution \\
 \vfill
 
 Student name: Ngoc Van Nhi Do \\
-Student ID: 105551765
+Student ID: 105551765 \\
+Submission date: 17/08/2026
 \end{center}
 \end{titlepage}
 
@@ -37,7 +38,7 @@ Student ID: 105551765
 \fancyhead[R]{105551765}
 \fancyfoot{}
 \renewcommand{\footrulewidth}{0.4pt}% default is 0pt
-\fancyfoot[L]{SWE40006 - Software Deployment and Evolution (Semester 2 2026 - Due August 18, 2026)}
+\fancyfoot[L]{SWE40006 - Software Deployment and Evolution (Semester 2 2026)}
 \fancyfoot[R]{\small\thepage}
 
 \newpage
@@ -55,8 +56,35 @@ Deployment Portfolio Task 1
 All four subtasks 1.1, 1.2, 1.3, and 1.4 were attempted. The technologies used include Visual Studio 2022 (v.17.14.37), WiX v7, and the HeatWave extension installed on the IDE.
 
 \section{Execution Evidence}
+
+Table~\ref{tab:links} below contain quick links to source code files created for all deployment tasks, as well as other relevant links as proof of successful task execution.
+
+\begin{table}[ht]
+\centering
+\caption{Links to source code files, releases, and PRs} 
+\label{tab:links}
+\vspace{2pt}
+\def\arraystretch{1.5}
+\begin{tabular}{|p{4cm}|p{12cm}|}
+\hline
+\textbf{Source} & \textbf{URL} \\
+\hline
+Task 1.1 & \url{https://github.com/nhydnv/SWE40006-Software-Deployment-and-Evolution/tree/main/deployment_task_1/subtask_1} \\
+\hline
+Task 1.2 & \url{https://github.com/nhydnv/SWE40006-Software-Deployment-and-Evolution/tree/main/deployment_task_1/subtask_2} \\
+\hline
+Task 1.3 & \url{https://github.com/nhydnv/SWE40006-Software-Deployment-and-Evolution/tree/main/deployment_task_1/subtask_3} \\
+\hline
+Task 1.4 Github Release & \url{https://github.com/nhydnv/Subtask-4/releases/tag/1.0.0} \\
+\hline
+Pull request to \texttt{microsoft/winget-pkgs} & \url{https://github.com/microsoft/winget-pkgs/pull/418748} \\
+\hline
+\end{tabular}
+\end{table}
+
+
 \subsection{Task 1.1}
-I built and packaged a sample console application into an .msi installer using WiX 7.0.0 via the Command-line Interface (CLI).
+I built and packaged a sample console application into an \texttt{.msi} installer using WiX 7.0.0 via the Command-line Interface (CLI).
 
 The first step is creating a new C\# project, adding the provided code, and building it in Release mode.
 
@@ -81,7 +109,7 @@ The first step is creating a new C\# project, adding the provided code, and buil
 \caption{Building the program in Release mode.}
 \end{figure}
 
-Once the program has been built, its executable is created the project's \texttt{bin\\Release} folder.
+Once the program has been built, its executable is created the project's \texttt{bin/Release} folder.
 
 The WiX toolset is installed using the CLI.
 
@@ -92,7 +120,7 @@ The WiX toolset is installed using the CLI.
 \caption{Installing WiX.}
 \end{figure}
 
-The WiX project and source file are manually created. The \texttt{.wxs} file is then configured to contain instructions to build the installer. The file specifies the application name, manufacturer, version, and upgrade code, as well as the directory in which the application will be installed. It also defines the application files that should be included in the installer and groups them into the feature.
+The WiX project and source file are manually created. The \texttt{.wxs} file is then configured to contain instructions to build the installer. The file specifies the application name, manufacturer, version, and upgrade code, as well as the directory in which the application will be installed. It also defines the application files that should be included in the installer and groups them into one feature.
 
 \begin{figure}[H]
 \centering
@@ -124,7 +152,7 @@ The installer is then built using the command below. The resulting MSI file is c
 \caption{The MSI file is created.}
 \end{figure}
 
-Running the installer \texttt{subtask\_1.msi} installs the application. The screenshot below shows that the app is successfully installed in the Program Files(x86) folder and runs as expected.
+Running the installer \texttt{subtask\_1.msi} installs the application. The screenshot below shows that the app is successfully installed in the Program Files folder and runs as expected.
 
 \begin{figure}[H]
 \centering
@@ -192,13 +220,13 @@ Similarly, a WiX installer application is created, and a \texttt{.wxs} file is w
 \caption{Building the MSI package.}
 \end{figure}
 
-Running the MSI package installs the app in the Program Files(x86) folder. The application runs as intended.
+Running the MSI package installs the app in the Program Files folder. The application runs as intended.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{images/2_run_app.jpg}
 \vspace{-1em}
-\caption{The application is installed in the Program Files (x86) folder. Double-clicking the app executes the program.}
+\caption{The application is installed in the Program Files folder. Double-clicking the app executes the program.}
 \end{figure}
 
 \begin{figure}[H]
@@ -209,7 +237,7 @@ Running the MSI package installs the app in the Program Files(x86) folder. The a
 \end{figure}
 
 \subsection{Task 1.3}
-The application created for subtask 1.3 is a simple WinForms application, making the use of the packages \texttt{Newtonsoft.Json} and \texttt{Serilog} to demonstrate the packaging of multiple external DLLs.
+The application created for Task 1.3 is a simple WinForms application, making the use of the packages \texttt{Newtonsoft.Json} and \texttt{Serilog} to demonstrate the packaging of multiple external DLLs.
 
 First, I created the WinForms application using the template provided in Visual Studio.
 
@@ -261,15 +289,100 @@ The \texttt{Components.wxs} file was configured to include the build outputs. Th
 \caption{The WiX project is built to create an MSI package.}
 \end{figure}
 
-The application is installed in the Program Files folder, since the platform architecture is specified as 64-bit in the build command this time. The screenshot below proves that the app was installed and executed without any errors.
+The application is installed in the Program Files folder. The screenshot below proves that the app was installed and executed without any errors.
 
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.35]{images/3_run_app.jpg}
 \vspace{-1em}
-\caption{The application is installed using the MSI package and runs successfully.}
+\caption{The application is installed using the MSI installer and runs successfully.}
 \end{figure}
 
+\subsection{Task 1.4}
+
+For this task, I hosted the MSI package created in Task 1.1 on Github Releases and submitted a valid package manifest Pull Request (PR) to the \texttt{microsoft/winget-pkgs} repository.
+
+First, I created a dedicated Github repository for this task and published the MSI package as a new Github Release. The Github repo can be found at \url{https://github.com/nhydnv/Subtask-4}, and the direct link to the release is at \url{https://github.com/nhydnv/Subtask-4/releases/tag/1.0.0}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{images/4_create_repo.jpg}
+\vspace{-1em}
+\caption{A dedicated Github repo is created to host the new release.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_new_release.jpg}
+\vspace{-1em}
+\caption{Creating a new Github Release and configuring its tag, title and other information. The MSI package is also uploaded.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{images/4_create_release.jpg}
+\vspace{-1em}
+\caption{The release is published.}
+\end{figure}
+    
+Once the MSI has been hosted on Github Releases, I tried submitting it to the Windows Package Manager. First, I installed WingetCreate, a tool to create, update, and submit manifest files to the WinGet repository.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_install_wingetcreate.jpg}
+\vspace{-1em}
+\caption{Installing WingetCreate.}
+\end{figure}
+
+Using WingetCreate, I created a new manifest, passing the URL to the installer hosted on Github as a command-line argument. This created a new manifest where I could specify each field by answering questions prompted by the tool.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.3]{images/4_new_winget.jpg}
+\vspace{-1em}
+\caption{Creating a new manifest using WingetCreate.}
+\end{figure}
+
+I then authorised WingetCreate so that it could automatically create a fork of the \texttt{microsoft/winget-pkgs} repository with my account, as well as a new branch containing my manifest files. It also created a new PR to the pull the changes on my branch to the \texttt{microsoft/winget-pkgs:master} branch.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{images/4_authorise_winget.jpg}
+\vspace{-1em}
+\caption{Authorising WingetCreate.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_winget_fork.jpg}
+\vspace{-1em}
+\caption{A fork of \texttt{microsoft/winget-pkgs} is created on my behalf by the WingetCreate tool.}
+\end{figure}
+
+Before the pull request could be resolved, the package manager needs to run tests against the installer and installed binaries to validate my submission. The screenshot below shows the checks in progress by the WinGet validator.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_winget_checks.jpg}
+\vspace{-1em}
+\caption{The WinGet validator checking the contents of my pull request before merging it to the master branch.}
+\end{figure}
+
+All the automated validation checks for the pull request passed succesfully; however, it still needs to be manually reviewed and approved by a community moderator before the package is available on the WinGet catalogue. In the meantine, a local installation using the exact same manifest submitted in the pull request was done to test verify that the package installs and functions correctly.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_passed_checks.jpg}
+\vspace{-1em}
+\caption{All validation checks were either skipped or passed.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_test_install.jpg}
+\vspace{-1em}
+\caption{Local installation using the same manifest that was submitted.}
+\end{figure}
 
 % References
 % \printbibliography
