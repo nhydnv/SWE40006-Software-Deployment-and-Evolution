@@ -9,7 +9,7 @@
         <MajorUpgrade
             DowngradeErrorMessage="A newer version of subtask_2 is already installed." />
 
-        <MediaTemplate />
+        <MediaTemplate EmbedCab="yes" />
 
         <StandardDirectory Id="ProgramFilesFolder">
             <Directory Id="INSTALLFOLDER" Name="subtask_2" />
