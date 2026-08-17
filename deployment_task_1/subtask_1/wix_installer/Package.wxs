@@ -13,8 +13,8 @@
 
         <MediaTemplate EmbedCab="yes"/>
 
-        <StandardDirectory Id="ProgramFilesFolder">
-            <Directory Id="INSTALLFOLDER" Name="subtask_1" />
+        <StandardDirectory Id="ProgramFiles6432Folder">
+            <Directory Id="INSTALLFOLDER" Name="Subtask 1" />
         </StandardDirectory>
 
         <Feature Id="MainFeature" Title="subtask_1" Level="1">

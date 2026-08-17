@@ -2,6 +2,7 @@
 bin/
 obj/
 publish/
+*.msi
 *.wixpdb
 *.cab
 *.config
