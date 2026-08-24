@@ -63,11 +63,13 @@ Table~\ref{tab:links} below contain relevant links as proof of successful task e
 \label{tab:links}
 \vspace{2pt}
 \def\arraystretch{1.5}
-\begin{tabular}{|p{4cm}|p{12cm}|}
+\begin{tabular}{|p{2cm}|p{14cm}|}
 \hline
 \textbf{Source} & \textbf{URL} \\
 \hline
 Task 2.1 & \url{https://swe40006-task-2-1-atbmg9a7daapdnec.australiaeast-01.azurewebsites.net} \\
+\hline
+Task 2.2 & \url{https://swe40006-task-2-2-f9emhph2gddzhker.australiaeast-01.azurewebsites.net/} \\
 \hline
 \end{tabular}
 \end{table}
@@ -176,6 +178,74 @@ The application is live and publicly acccessible at \url{https://swe40006-task-2
 \includegraphics[scale=0.4]{images/1_live_site.jpg}
 \vspace{-1em}
 \caption{The application is deployed and running live.}
+\end{figure}
+
+\subsection{Task 2.2}
+
+For task 2.2, I deployed an ASP.NET Razor Pages application with Azure App Services, also using Visual Studio Code and the Azure App Service extension.
+
+First, I created a new Razor Pages project using the .NET CLI. Once the project has been created, I ran \texttt{dotnet publish} to publish the application.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_new_project.jpg}
+\vspace{-1em}
+\caption{Creating a new Razor Pages project via the CLI.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_test_local.jpg}
+\vspace{-1em}
+\caption{The application runs locally on port 5278.}
+\end{figure}
+
+Similar to Task 2.1, I created a new Web App Service instance using the Azure App Service extension. The new instance is named \texttt{swe40006-task-2-2}, hosted in the Australia East region, and using the .NET 8.0 runtime.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/2_create_web_app.jpg}
+\vspace{-1em}
+\caption{A new Web App Service instance is successfully created.}
+\end{figure}
+
+The application is then deployed into this new instance. It is hosted at \url{https://swe40006-task-2-2-f9emhph2gddzhker.australiaeast-01.azurewebsites.net/}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/2_deploy_app.jpg}
+\vspace{-1em}
+\caption{Successful deployment.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_build_output.jpg}
+\vspace{-1em}
+\caption{Logs showing that deployment was successful.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_live_site.jpg}
+\vspace{-1em}
+\caption{The web application up and running live.}
+\end{figure}
+
+Even though this App Service instance is running on a free tier, it is still best practice to manage cloud resources responsibly to avoid unintended charges. To demonstrate this, I stopped the instance using the Azure Portal.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_stop_app.jpg}
+\vspace{-1em}
+\caption{Stopping the instance.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_stopped.jpg}
+\vspace{-1em}
+\caption{The web app has been stopped.}
 \end{figure}
 
 % References
