@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/b4f93eab-6358-44c2-b502-ab7e7cee42a2/resourceGroups/appsvc_linux_australiaeast/providers/Microsoft.Web/sites/swe40006-task-2-1",
+    "appService.deploySubpath": "subtask_1"
+}
