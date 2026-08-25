@@ -69,7 +69,9 @@ Table~\ref{tab:links} below contain relevant links as proof of successful task e
 \hline
 Task 2.1 & \url{https://swe40006-task-2-1-atbmg9a7daapdnec.australiaeast-01.azurewebsites.net} \\
 \hline
-Task 2.2 & \url{https://swe40006-task-2-2-f9emhph2gddzhker.australiaeast-01.azurewebsites.net/} \\
+Task 2.2 & \url{https://swe40006-task-2-2-f9emhph2gddzhker.australiaeast-01.azurewebsites.net/} (stopped) \\
+\hline
+Task 2.3 & \url{https://swe40006-task-2-3-hacthcdka0dub4ax.australiaeast-01.azurewebsites.net/} (stopped) \\
 \hline
 \end{tabular}
 \end{table}
@@ -246,6 +248,103 @@ Even though this App Service instance is running on a free tier, it is still bes
 \includegraphics[scale=0.4]{images/2_stopped.jpg}
 \vspace{-1em}
 \caption{The web app has been stopped.}
+\end{figure}
+
+\subsection{Task 2.3}
+
+For task 2.3, I deployed a copy of the Razor Pages application created in the previous task.
+
+\subsubsection{Configuration Management}
+
+To demonstrate configuration abstraction, I defined a setting in \texttt{appsettings.json} and read its value at runtime via \texttt{IConfiguration}, rather than hardcoding it directly in the application code. This value was then overriden using an Azure App Service Environment Variable in the Azure Portal, allowing the deployed application to resolve a different value. In a real scenario involving sensitive data, the value in \texttt{appsettings.json} would be left blank, and the real value stored locally using \texttt{user-secrets}. As the configuration value here is non-sensitive and only for demonstration purposes, I kept it in \texttt{appsettings.json} for easy testing. 
+
+First, I added the new setting \texttt{WelcomeMessage} in \texttt{appsettings.json}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/3_add_config.jpg}
+\vspace{-1em}
+\caption{Adding a new setting in \texttt{appsettings.json}.}
+\end{figure}
+
+I then tested the application locally. The configuration value showed up as expected.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_test_local.jpg}
+\vspace{-1em}
+\caption{Testing that the app runs fine locally.}
+\end{figure}
+
+I then deployed the app with the Azure App Service extension similar to what I did in task 2.2.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/3_deploy_app.jpg}
+\vspace{-1em}
+\caption{Creating a new Web Service instance and deploying my app.}
+\end{figure}
+
+In the Azure Portal, I added a new environment variable to the newly created \texttt{swe40006-task-2-3} App Service. The value here is different from the value that was used locally ("Hello from Azure Web Service" vs. "Hello from local appsettings.json") to demonstrate the overriding mechanism.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{images/3_add_config_portal.jpg}
+\vspace{-1em}
+\caption{Adding a new environment variable \texttt{AppSettings\_\_WelcomeMessage} in the Azure Portal.}
+\end{figure}
+
+The overriden value set to the environment variable showed up on the deployed website.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_test_cloud.jpg}
+\vspace{-1em}
+\caption{The site showing the new value.}
+\end{figure}
+
+\subsubsection{Diagnostics and Logging}
+
+I also configured a active health check on this \texttt{swe40006-task-2-3} instance. First, I modified the source code to the the health check endpoint.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{images/3_add_endpoint.jpg}
+\vspace{-1em}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{images/3_add_health_check.jpg}
+\vspace{-1em}
+\caption{Adding a new health check endpoint to the app.}
+\end{figure}
+
+Then, once on the Azure Portal, I realised that the health check wasn't available on the free tier. This was resolved by scaling the instance to a Basic plan.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_need_scale.jpg}
+\vspace{-1em}
+\caption{The health check is not available for free-tier instances.}
+\end{figure}
+
+Once that was resolved, I could configure the health check on the portal by adding the path to the health check endpoint, which was \texttt{/health}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_configure_health_check.jpg}
+\vspace{-1em}
+\caption{Setting up the active health check endpoint on  Azure Portal.}
+\end{figure}
+
+Going to the endpoint at \url{https://swe40006-task-2-3-hacthcdka0dub4ax.australiaeast-01.azurewebsites.net/health} verified that the intstance was healthy. I then stopped the instance to ensure that resources weren't being wasted.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/3_health_check.jpg}
+\vspace{-1em}
+\caption{Verifying that active health checking is working.}
 \end{figure}
 
 % References
