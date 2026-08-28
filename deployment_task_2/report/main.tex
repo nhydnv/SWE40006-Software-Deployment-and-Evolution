@@ -28,7 +28,7 @@ SWE40006 - Software Deployment and Evolution \\
 
 Student name: Ngoc Van Nhi Do \\
 Student ID: 105551765 \\
-Submission date: [DO NOT FORGETTTTTTTTTTTTTTTTTTTTTTT]
+Submission date: 28/08/2026
 \end{center}
 \end{titlepage}
 
@@ -72,6 +72,8 @@ Task 2.1 & \url{https://swe40006-task-2-1-atbmg9a7daapdnec.australiaeast-01.azur
 Task 2.2 & \url{https://swe40006-task-2-2-f9emhph2gddzhker.australiaeast-01.azurewebsites.net/} (stopped) \\
 \hline
 Task 2.3 & \url{https://swe40006-task-2-3-hacthcdka0dub4ax.australiaeast-01.azurewebsites.net/} (stopped) \\
+\hline
+Task 2.4 & \url{https://swe40006-task-2-4-b2gacqbtckemadfp.australiaeast-01.azurewebsites.net/} (stopped) \\
 \hline
 \end{tabular}
 \end{table}
@@ -345,6 +347,100 @@ Going to the endpoint at \url{https://swe40006-task-2-3-hacthcdka0dub4ax.austral
 \includegraphics[scale=0.5]{images/3_health_check.jpg}
 \vspace{-1em}
 \caption{Verifying that active health checking is working.}
+\end{figure}
+
+I also configured Azure App Service Logging on my instance using the Azure Portal by enabling Application and Web Server logs.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/3_log_configs.jpg}
+\vspace{-1em}
+\caption{Configuring App Service logs on my instance.}
+\end{figure}
+
+The screenshots below show Azure App Service Log Stream capturing traffic in real time.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/3_application_logs.jpg}
+\vspace{-1em}
+\caption{Application logs.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/3_web_server_logs.jpg}
+\vspace{-1em}
+\caption{Web server logs.}
+\end{figure}
+
+\subsection{Task 2.4}
+
+In task 2.4, I deployed a PHP web application to Azure App Service and integreated Azure Application Insights over one of my previously hosted apps.
+
+First, I created a simple web application with two PHP files and a stylesheet.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_create_app.jpg}
+\vspace{-1em}
+\caption{Creating a new PHP web application.}
+\end{figure}
+
+Once the application had been written, I deployed it in the same way I did in previous tasks. The deployed app could be found at \url{https://swe40006-task-2-4-b2gacqbtckemadfp.australiaeast-01.azurewebsites.net/}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_create_app.jpg}
+\vspace{-1em}
+\caption{The deployed application running on Azure App Service.}
+\end{figure}
+
+Since there is no official server-side monitoring for PHP sites by Azure, I decided to integrate Application Insights for the ASP.NET application deployed in task 2.3. An Application Insights resource had been automatically created at deployment time for the app, as shown below:
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_create_app_insights.jpg}
+\vspace{-1em}
+\caption{The Application Insights resource automatically created for the \texttt{swe40006-task-2-3} instance.}
+\end{figure}
+
+I then registered and configured the Application Insights services so that my app could send telemetry to Azure Application Insights by adding a line to the source code. I also wired the App Service instance to the Application Insights resource mentioned above on the Azure Portal.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/4_add_app_insights.jpg}
+\vspace{-1em}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/4_config_app_insights.jpg}
+\vspace{-1em}
+\caption{Configuring Application Insights for my app.}
+\end{figure}
+
+After those had been configured, I could track the application's live metrics, performance metrics, and failures on the portal.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_live_metrics.jpg}
+\vspace{-1em}
+\caption{Live metrics.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_performance.jpg}
+\vspace{-1em}
+\caption{Performance metrics.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_failures.jpg}
+\vspace{-1em}
+\caption{Failure tracking.}
 \end{figure}
 
 % References
