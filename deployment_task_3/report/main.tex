@@ -1,0 +1,263 @@
+\documentclass{article}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[style=apa, sorting=nyt]{biblatex}
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{a4paper, margin=1in}
+% \addbibresource{references.bib}
+
+\begin{document}
+
+% ---------- Cover page ---64-------
+\begin{titlepage}
+\begin{center}
+\vspace*{1cm}
+
+Swinburne University of Technology \\
+School of Science, Computing, and Emerging Technologies
+\vspace{8cm}
+
+SWE40006 - Software Deployment and Evolution \\
+\textbf{Deployment Portfolio Task 3}
+\vfill
+
+Student name: Ngoc Van Nhi Do \\
+Student ID: 105551765 \\
+Submission date: DON'T FORGET THISSSSSSSSSSS
+\end{center}
+\end{titlepage}
+
+% ---------- Header + footer ----------
+\pagestyle{fancy}
+\fancyhead[L]{Ngoc Van Nhi Do}
+\fancyhead[R]{105551765}
+\fancyfoot{}
+\renewcommand{\footrulewidth}{0.4pt}% default is 0pt
+\fancyfoot[L]{SWE40006 - Software Deployment and Evolution (Semester 2 2026)}
+\fancyfoot[R]{\small\thepage}
+
+\newpage
+
+\begin{center}
+\vspace*{2px}
+{\LARGE
+\setlength{\baselineskip}{2em}
+Deployment Portfolio Task 3
+}
+\end{center}
+
+\section{Declared Target Level}
+
+All four subtasks 3.1, 3.2, 3.3, and 3.4 were attempted.
+
+Table~\ref{tab:links} below contain relevant links as proof of successful task execution.
+
+\begin{table}[ht]
+\centering
+\caption{Publicly accessible URLs for live grading verification} 
+\label{tab:links}
+\vspace{2pt}
+\def\arraystretch{1.5}
+\begin{tabular}{|p{2cm}|p{14cm}|}
+\hline
+\textbf{Source} & \textbf{URL} \\
+\hline
+Task 3.1 & \url{http://13.55.158.77} \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Execution Evidence}
+
+\subsection{Task 3.1}
+
+For this task, I deployed a WordPress application onto an Amazon EC2 instance.
+
+\subsubsection{AWS Environment Setup}
+
+First, I created a new AWS account on the free plan, which gave me \$100 in free credits.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_aws_start.jpg}
+\vspace{-1em}
+\caption{The AWS Console interface after I had successfully signed up.}
+\end{figure}
+
+I then created a new IAM user for my coursework named \texttt{SWE40006\_student} rather than using the root account. This user is assigned to a new user group \texttt{EC2-Lab-Users} which is given full access to EC2 resources (using \texttt{AmazonEC2FullAccess}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_create_iam.jpg}
+\vspace{-1em}
+\caption{Creating a new IAM user \texttt{SWE40006\_student}.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_add_ec2_perms.jpg}
+\vspace{-1em}
+\caption{Adding \texttt{AmazonEC2FullAccess} to the user group \texttt{EC2-Lab-Users}, which is then assigned to \texttt{SWE40006\_student}.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_login_iam.jpg}
+\vspace{-1em}
+\caption{Logging into the AWS Console as the new IAM user.}
+\end{figure}
+
+To securely login into my EC2 instances, I must generate an SSH key pair. The private key was downloaded and stored on my local machine for later authentication.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_create_key_pair.jpg}
+\vspace{-1em}
+\caption{Creating a new key pair \texttt{task-3.1}.}
+\end{figure}
+
+\subsubsection{Compute Provisioning}
+
+I launched a new EC2 instance called \texttt{Task 3.1}. This instance runs Amazon Linux 2023, uses a \texttt{t3.micro} instance time to remain eligible for the free tier, and is configured with the previously generated key pair.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_created_instance.jpg}
+\vspace{-1em}
+\caption{Creating a new Amazon EC2 instance.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_select_os.jpg}
+\vspace{-1em}
+\caption{Amazon Linux 2023 was chosen as the OS for this instance.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_select_key_pair.jpg}
+\vspace{-1em}
+\caption{Configuring the instance with the \texttt{task-3.1} key pair.}
+\end{figure}
+
+I then configured the instance with a new security group \texttt{task-3.1-sg}, which allowed SSH (22), HTTP (80), and HTTPS (443) inbound traffic from anywhere.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_select_sg.jpg}
+\vspace{-1em}
+\caption{Configuring the security rules to allow inbound SSH, HTTP, and HTTPS traffic to this instance.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_created_instance.jpg}
+\vspace{-1em}
+\caption{The new instance is successfully created.}
+\end{figure}
+
+I then SSH-ed to the instance using PuTTY.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_ssh_ip.jpg}
+\vspace{-1em}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_ssh_key_pair.jpg}
+\vspace{-1em}
+\caption{Connecting to the EC2 instance using SSH.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_ssh_success.jpg}
+\vspace{-1em}
+\caption{Connection was successful.}
+\end{figure}
+
+I then installed the Apache web server and started it so that it could later host my web application.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_install_apache.jpg}
+\vspace{-1em}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_start_apache.jpg}
+\vspace{-1em}
+\caption{Installing and starting the web server.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/1_verify_running.jpg}
+\vspace{-1em}
+\caption{Verifying that the web server is publicly accessible.}
+\end{figure}
+
+\subsubsection{Application Deployment}
+
+Before deploying the WordPress application, I needed to install its dependencies which included installing PHP and MariaDB.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_install_php.jpg}
+\vspace{-1em}
+\caption{Installing PHP.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_install_mariadb.jpg}
+\vspace{-1em}
+\caption{Installing MariaDB.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_start_mariadb.jpg}
+\vspace{-1em}
+\caption{Starting and enabling the MariaDB service.}
+\end{figure}
+
+I then set up a local database for the web application.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_create_db.jpg}
+\vspace{-1em}
+\caption{Setting up a local database named \texttt{wordpress\_db} for the WordPress application.}
+\end{figure}
+
+I installed and extracted the WordPress package. The command \texttt{chown} made Apache the owner of the WordPress files, while \texttt{chmod} set who could read, write, or access those files. These commands ensured that Apache had the correct permissions to run WordPress.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/1_install_wordpress.jpg}
+\vspace{-1em}
+\caption{Installing WordPress and configuring permissions.}
+\end{figure}
+
+My WordPress application is deployed and running at \url{http://13.55.158.77}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/1_deployed.jpg}
+\vspace{-1em}
+\caption{The deployed WordPress application.}
+\end{figure}
+
+% References
+% \printbibliography
+\end{document}
