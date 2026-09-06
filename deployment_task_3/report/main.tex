@@ -258,6 +258,163 @@ My WordPress application is deployed and running at \url{http://13.55.158.77}.
 \caption{The deployed WordPress application.}
 \end{figure}
 
+\subsection{Task 3.2}
+
+For this task, I configured my web application to use a database hosted on an Amazon RDS instance, effectively decoupling the database from the EC2 instance. I also created a backup of my web application by storing my files on an S3 bucket, and demonstrated how I could restore my application using this backup.
+
+\subsubsection{Database Decoupling}
+
+I started by creating a new RDS instance and configured it to use MariaDB as the database engine. I also connected the EC2 instance to this database right away, so that AWS automatically allowed inbound traffic on port 3306 from the web application to the database for me.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_select_mariadb.jpg}
+\vspace{-1em}
+\caption{Creating a new RDS instance.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_connect_ec2.jpg}
+\vspace{-1em}
+\caption{Connecting the EC2 instance from the previous task.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_db_created.jpg}
+\vspace{-1em}
+\caption{The database is successfully created.}
+\end{figure}
+
+From the EC2 instance's command line, I established a connection to the RDS instance using its endpoint at \url{task-32-db.cteoaom2c5t2.ap-southeast-2.rds.amazonaws.com}. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/2_connect_rds.jpg}
+\vspace{-1em}
+\caption{Connecting to the database from the EC2 instance's terminal.}
+\end{figure}
+
+Once I could connect to the database, I created a new database \texttt{wordpress\_db} to be used by my application. I then exited the DB connection, configured the \texttt[wg\_config.php] file with the required database information, including the database name, username, and password, along with the other necessary credentials. This allowed the WordPress application to connect to and use the configured database. Finally, I restarted the Apache web server and verified that the application has been successfully configured to use the database.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/2_config_db.jpg}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/2_db_configs.jpg}
+\vspace{-1em}
+\caption{Editing the database configurations and verifiying the connection to the RDS database.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_db_configured.jpg}
+\vspace{-1em}
+\caption{The application now shows the WordPress installation form, which means the database has successfully been connected.}
+\end{figure}
+
+\subsubsection{Backup and Restore}
+
+I started by creating a new S3 bucket with the name \texttt{swe40006-105551765-bucket} to store my backup files.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_create_bucket.jpg}
+\vspace{-1em}
+\caption{The application now shows the WordPress installation form, which means the database has successfully been connected.}
+\end{figure}
+
+I also created a new IAM role allowing full access to S3. This role is then attached to my EC2 instance so that the server could read and write files to the S3 bucket.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_create_role.jpg}
+\vspace{-1em}
+\caption{Creating a new IAM role with the \texttt{AmazonS3FullAccess} policy.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_add_role.jpg}
+\vspace{-1em}
+\caption{Adding the role to my EC2 instance.}
+\end{figure}
+
+I then made a backup of my files by archiving them into a \texttt{.tar} file to avoid having to individually handle hundreds of different files. This archive is then uploaded to the S3 bucket, serving as the backup to my web server.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/2_make_backup.jpg}
+\vspace{-1em}
+\caption{Creating the backup as a \texttt{.tar} archive.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/2_upload_backup.jpg}
+\vspace{-1em}
+\caption{Uploading the backup to the S3 bucket.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_backup_uploaded.jpg}
+\vspace{-1em}
+\caption{I could see that the backup has been uploaded using the AWS Console.}
+\end{figure}
+
+To demonstrate that I can restore my web server, I first removed all my web application files to simulate a deletion.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/2_rm_server.jpg}
+\vspace{-1em}
+\caption{Removing all web application files on my EC2 instance.}
+\end{figure}
+
+Once the files were removed, accessing my website displayed only an "It works!" message rather than the WordPress application, which is the default Apache web server page. This confirmed that the web application had been completely deleted.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_server_restored.jpg}
+\vspace{-1em}
+\caption{The WordPress application had been deleted.}
+\end{figure}
+
+To restore my deleted web application, I pulled the backup from the S3 bucket and extracted the archived files. The final step was to modify Apache's permissions to be able to read these files and restarting the web server.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/2_pull_backup.jpg}
+\vspace{-1em}
+\caption{Downloading the backup from the S3 bucket.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/2_extract.jpg}
+\vspace{-1em}
+\caption{Extracting the web application files.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/2_extracted_files.jpg}
+\vspace{-1em}
+\caption{Verifying that the application files have been extracted.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/2_server_restored.jpg}
+\vspace{-1em}
+\caption{The web application was successfully restored.}
+\end{figure}
+
 % References
 % \printbibliography
 \end{document}
