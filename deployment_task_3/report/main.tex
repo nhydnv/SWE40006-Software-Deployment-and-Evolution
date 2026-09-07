@@ -10,6 +10,12 @@
 
 \geometry{a4paper, margin=1in}
 % \addbibresource{references.bib}
+% Space between a float at the top/bottom of a page and the main text
+\setlength{\textfloatsep}{10pt plus 2pt minus 4pt} % Default is usually ~20pt
+% Space between two floats (e.g., two figures stacked on top of each other)
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}     % Default is usually ~12pt
+% Space between a float that is embedded "in the middle" of text (using [h] or [H])
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}    % Default is usually ~12pt
 
 \begin{document}
 
@@ -67,7 +73,7 @@ Table~\ref{tab:links} below contain relevant links as proof of successful task e
 \hline
 \textbf{Source} & \textbf{URL} \\
 \hline
-Task 3.1 & \url{http://13.55.158.77} \\
+ALB DNS Name & \url{http://task-3-3-alb-2099008439.ap-southeast-2.elb.amazonaws.com/}\\
 \hline
 \end{tabular}
 \end{table}
@@ -249,8 +255,6 @@ I installed and extracted the WordPress package. The command \texttt{chown} made
 \caption{Installing WordPress and configuring permissions.}
 \end{figure}
 
-My WordPress application is deployed and running at \url{http://13.55.158.77}.
-
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{images/1_deployed.jpg}
@@ -296,7 +300,7 @@ From the EC2 instance's command line, I established a connection to the RDS inst
 \caption{Connecting to the database from the EC2 instance's terminal.}
 \end{figure}
 
-Once I could connect to the database, I created a new database \texttt{wordpress\_db} to be used by my application. I then exited the DB connection, configured the \texttt[wg\_config.php] file with the required database information, including the database name, username, and password, along with the other necessary credentials. This allowed the WordPress application to connect to and use the configured database. Finally, I restarted the Apache web server and verified that the application has been successfully configured to use the database.
+Once I could connect to the database, I created a new database \texttt{wordpress\_db} to be used by my application. I then exited the DB connection, configured the \texttt[wg\_config.php] file with the required database information, including the database name, username, and password, along with the other necessary credentials. This allowed the WordPress application to connect to and use the configured database. Finally, I restarted the Apache web server and verified that the application has been successfully configured to use the database. As I had not installed the actual WordPress application by this point, the database displayed all empty entries.
 
 \begin{figure}[H]
 \centering
@@ -413,6 +417,183 @@ To restore my deleted web application, I pulled the backup from the S3 bucket an
 \includegraphics[scale=0.4]{images/2_server_restored.jpg}
 \vspace{-1em}
 \caption{The web application was successfully restored.}
+\end{figure}
+
+\subsection{Task 3.3}
+
+For this task, I created an EC2 Launch Template containing all the necessary configurations to recreate the web server and application on my original EC2 instance. I also provisioned an Application Load Balancer (ALB) across the \texttt{ap-southeast-2a} and \texttt{ap-southeast-2b} availability zones to route public HTTP/HTTPS traffic. The load balancer will route traffic to a target group managed by an Auto Scaling Group (ASG). The ASG uses the Launch Template to configure EC2 instances and maintains the desired number of instances, launching new instances in the event of instance failures.
+
+\subsubsection{Creating the Launch Template}
+
+A new launch template (\texttt{task-3-3-template}) is created and configured with the Amazon Linux AMI, the \texttt{t3.micro} instance type, and the security group \texttt{task-3.1-sg} that was used for the original EC2 instance.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/3_create_template.jpg}
+\vspace{-1em}
+\caption{Summary of the launch template's configurations.}
+\end{figure}
+
+Configuring the user data for this template is especially important, as it is the startup script that runs when the instance launches, ensuring that everything necessary is correctly intsalled and configured to serve our web application. The script below updates the OS, installs the web server, PHP, and AWS CLI, starts Apache and PHP\_FPM, creates the WordPress web directory, downloads the backup that I created earlier from S3, extracts the files, sets file permissions, and restarts the web server.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_user_data.jpg}
+\vspace{-1em}
+\caption{The template's user data script.}
+\end{figure}
+
+\subsubsection{Creating the Application Load Balancer (ALB)}
+
+Before creating the ALB, I had to set up a new security group for it. The idea is to put the ALB in front my my application instance and make the instances private from the public internet. The ALB will handle incoming HTTP/HTTPS traffic from users on the internet, then distribute these requests across the application instances.
+
+The ALB's security group will allow inbound HTTP/HTTPS traffic from anywhere.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_create_sg.jpg}
+\vspace{-1em}
+\caption{Creating a new security group for the ALB.}
+\end{figure}
+
+The inbound rules for the security group that was used for the original EC2 instance were also changed to only receive HTTP traffic from the ALB's security group. This also implies that the web application hosted on the first EC2 instance is no longer publicly accessible.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_edit_sg.jpg}
+\vspace{-1em}
+\caption{Configuring the rules for the application instances' security group to no longer allow HTTP traffic from the internet.}
+\end{figure}
+
+I then created an ALB (\texttt{task-3-3-alb}) spanning the availability zones \texttt{ap-southeast-2a} and \texttt{ap-southeast-2b}, configured with the security group \texttt{task-3.3-sg} that was just created above.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_create_alb.jpg}
+\vspace{-1em}
+\caption{Creating a new ALB with the name \texttt{task-3-3-alb}.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_alb_network.jpg}
+\vspace{-1em}
+\caption{Configuring the ALB's availability zones and security group.}
+\end{figure}
+
+I also created a new target group that would receive traffic from the ALB. A health check was configured on port 80 to verify that the instances would be running and responding correctly. The target group was then attached to the ALB, allowing the ALB to forward incoming traffic to healthy instances.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_create_alb.jpg}
+\vspace{-1em}
+\caption{Creating a new target group \texttt{task-3-3-tg}. The target group is not registered with any instances for now.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_alb_tg.jpg}
+\vspace{-1em}
+\caption{Attaching \texttt{task-3-3-tg} to the ALB.}
+\end{figure}
+
+\subsubsection{Creating the Auto Scaling Group (ASG)}
+
+I then created a new ASG with the following configurations:
+
+\begin{itemize}
+    \item Name: \texttt{task-3-3-asg}
+    \item Launch template: \texttt{task-3-3-template}
+    \item Availability Zones: \texttt{ap-southeast-2a} and \texttt{ap-southeast-2b} (matching the ALB's availability zones)
+    \item Load balancer: \texttt{task-3-3-alb}
+    \item Target group: \texttt{task-3-3-tg}
+    \item Desired capacity: 2
+    \item Minimum capacity: 2
+    \item Maximum capacity: 4
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_create_asg.jpg}
+\vspace{-1em}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_asg_alb.jpg}
+\vspace{-1em}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_config_capacity.jpg}
+\vspace{-1em}
+\caption{A summary of ASG's configurations.}
+\end{figure}
+
+\subsubsection{Verification}
+
+Once everything had been set up and configured, I noticed that the health checks for my instances were returning an "Unhealthy" status. I initially suspected that the issue was related to networking for traffic being unable to reach the instances correctly. I began investigating the VPC configuration, security groups, inbound and outbound security rules, and the availability zones to ensure that everything was correctly configured. After confirming that these settings were correct, I decided to SSH into one of the failing instances to further troubleshoot this issue.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/3_unhealthy.jpg}
+\vspace{-1em}
+\caption{Health checks were returning an "Unhealthy" status, causing the ASG to deregister failing instances and launch new ones to replace them.}
+\end{figure}
+
+I investigated a wide range of potential issues, checking installed dependencies and making sure they were running, verifying that the web application files were properly installed into the correct directory, or that the database configurations contained the correct information. Testing showed that Apache and PHP-FPM were running correctly and that PHP scripts could execute successfully. The WordPress installation was also correctly restored from the S3 backup, including the \texttt{wp-config.php} file, which pointed to the RDS database. The root cause was an incorrect RDS security group configuration that prevented the EC2 intsances from connecting to the database on port 3306. When the ALB requests \texttt{/}, WordPress tried to connect to the database and hung waiting for the database connection, which made Apache eventually time out.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_debug_files.jpg}
+\vspace{-1em}
+\caption{Checking that the application files were restored correctly.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/3_debug_configs.jpg}
+\vspace{-1em}
+\caption{Verifying that the database configurations are correct.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/3_debug_db.jpg}
+\vspace{-1em}
+\caption{An initial attempt to connect to the RDS database timed out. The second attempt showed a successful connection after the problem had been fixed.}
+\end{figure}
+
+The RDS instance's security group was allowing MySQL traffic on port 3306 from another security group that was not configured with the applications instances. This was fixed by adding the correct inbound security rule.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_db_sg.jpg}
+\vspace{-1em}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_fix_sg.jpg}
+\vspace{-1em}
+\caption{Adding the correct security rule so that the instances could connect to the RDS database.}
+\end{figure}
+
+The health checks now return a "Healthy" status for both instances, confirming that the ALB can communicate with them correctly. The application can be accessed through the ALB's DNS name at \url{http://task-3-3-alb-2099008439.ap-southeast-2.elb.amazonaws.com/}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_fixed.jpg}
+\vspace{-1em}
+\caption{Health checks return "Healthy" status.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/3_live_site.jpg}
+\vspace{-1em}
+\caption{The application is running live and can be accessed through the ALB.}
 \end{figure}
 
 % References
