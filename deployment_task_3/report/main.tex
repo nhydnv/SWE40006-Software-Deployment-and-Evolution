@@ -3,6 +3,7 @@
 \usepackage{setspace}
 \usepackage{titlesec}
 \usepackage{graphicx}
+\usepackage{enumitem}
 \usepackage{float}
 \usepackage[style=apa, sorting=nyt]{biblatex}
 \usepackage{geometry}
@@ -501,7 +502,7 @@ I also created a new target group that would receive traffic from the ALB. A hea
 
 I then created a new ASG with the following configurations:
 
-\begin{itemize}
+\begin{itemize}[nosep]
     \item Name: \texttt{task-3-3-asg}
     \item Launch template: \texttt{task-3-3-template}
     \item Availability Zones: \texttt{ap-southeast-2a} and \texttt{ap-southeast-2b} (matching the ALB's availability zones)
@@ -595,6 +596,143 @@ The health checks now return a "Healthy" status for both instances, confirming t
 \vspace{-1em}
 \caption{The application is running live and can be accessed through the ALB.}
 \end{figure}
+
+\subsection{Task 3.4}
+
+For task 3.4, I configured a CloudWatch alarm for the Auto Scaling Group to monitor CPU utilisation and trigger when it exceeds 70\% over a 5-minute period. An Amazon SNS topic was configured to send an email notification to my student email address when the alarm is triggered. I also enabled AWS Systems Manager (SSM) Session Manager for the EC2 instances, allowing secure terminal access through the AWS Console without requiring public SSH access or open port 22.
+
+\subsubsection{CloudWatch Monitoring and Alarm}
+
+Before creating the alarm, I set up an SNS topic called \texttt{task-3-4-topic}. The CloudWatch alarm uses this topic as the destination to send its notifications, publishing a message when the alarm is triggered by a pre-defined metric. Subscribers to the SNS topic can then receive those notifications.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/4_create_topic.jpg}
+\vspace{-1em}
+\caption{Creating a new SNS topic \texttt{task-3-4-topic}.}
+\end{figure}
+
+I then subscribed to this topic so that I could receive an email whenever the CloudWatch alarm gets triggered.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/4_create_subscription.jpg}
+\vspace{-1em}
+\caption{Subscribing to the SNS topic.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_verify_subscription.jpg}
+\vspace{-1em}
+\caption{An email is sent to my student email address to verify the subscription.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/4_subscription_verified.jpg}
+\vspace{-1em}
+\caption{My subscription is verified.}
+\end{figure}
+
+The next step was creating the CloudWatch alarm itself. I set up an alarm on the \texttt{CPUUtilization} metric for my ASG \texttt{task-3-3} rather on the individual EC2 instances. I also set the threshold for the alarm to "greater than 70", meaning that the alarm is triggered with CPU utilisation exceeds 70\% for over 5 minutes.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/4_create_alarm.jpg}
+\vspace{-1em}
+\caption{Creating a new CloudWatch alarm \texttt{task-3-4-alarm}.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_select_metric.jpg}
+\vspace{-1em}
+\caption{Selecting the \texttt{CPUUtilization} metric for my ASG \texttt{task-3-3}.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_select_metric.jpg}
+\vspace{-1em}
+\caption{Configuring the threshold for the metric to "greater than 70\%".}
+\end{figure}
+
+As previously mentioned, the SNS topic \texttt{task-3-4-topic} is attached to the alarm so that I could be notified when the average CPU utilisation metric goes past the defined threshold.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/4_config_alarm.jpg}
+\vspace{-1em}
+\caption{Configuring the metric to Average over a 5-minute period, with the threshold set to Greater than a value of 70.}
+\end{figure}
+
+The alarm has been created. The graph displays the defined threshold as a red dotted line against the current CPU utilisation.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_metric.jpg}
+\vspace{-1em}
+\caption{The \texttt{task-3-4-alarm} dashboard.}
+\end{figure}
+
+\subsubsection{Secure Management via SSM}
+
+The goal of this task is to securely access the backend EC2 instances without requiring a private key file or exposting port 22 to the public internet. The first step was to ensure that the EC2 instances had access to the AWS Systems Manager service. This was achieved by attaching the \texttt{AmazonSSMManagedInstanceCore} to their IAM role.
+
+I attached this policy to the existing IAM role that was already associated with my EC2 instances. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_add_policy.jpg}
+\vspace{-1em}
+\caption{Attaching the policy \texttt{AmazonSSMManagedInstanceCore} to the existing IAM role \texttt{s3-full-access} (I should've picked a better role name, in retrospect).}
+\end{figure}
+
+As an additional verification step, I SSH-ed into one of the instances to confirm that the SSM agent had already been installed. This is expected, as the SSM agent should be pre-installed on Amazon Linux instances.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/4_confirm_agent.jpg}
+\vspace{-1em}
+\caption{Verifying that the SSM agent already exists on the backend EC2 instances.}
+\end{figure}
+
+Once the role has been modified, the instances are now connected to the Session Manager.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_ssm_connected.jpg}
+\vspace{-1em}
+\caption{The details of the instance \texttt{i-0f8e63855d89f9843} show that it is connected to the Session Manager.}
+\end{figure}
+
+As a proof of concept, I removed the inbound security rule which allowed public SSH access to the EC2 instances. An attempt to SSH into the instance above using PuTTY timed out following this removal. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_edit_sg.jpg}
+\vspace{-1em}
+\caption{Editing the instances' security group to remove public SSH access.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/4_timeout.jpg}
+\vspace{-1em}
+\caption{An attempt to SSH into the instance using PuTTY failed.}
+\end{figure}
+
+I then established a connection to the EC2 instance using the Session Manager through the AWS Console to demonstrate that I could securely access the instance's terminal without requiring an SSH connection or the use of a private key.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.6]{images/4_ssm_terminal.jpg}
+\vspace{-1em}
+\caption{The Session Manager terminal session for the instance \texttt{i-0f8e63855d89f9843}.}
+\end{figure}
+
+\section{Self-troubleshooting}
 
 % References
 % \printbibliography
