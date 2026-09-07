@@ -35,7 +35,7 @@ SWE40006 - Software Deployment and Evolution \\
 
 Student name: Ngoc Van Nhi Do \\
 Student ID: 105551765 \\
-Submission date: DON'T FORGET THISSSSSSSSSSS
+Submission date: 07/09/2026
 \end{center}
 \end{titlepage}
 
@@ -73,6 +73,8 @@ Table~\ref{tab:links} below contain relevant links as proof of successful task e
 \begin{tabular}{|p{2cm}|p{14cm}|}
 \hline
 \textbf{Source} & \textbf{URL} \\
+\hline
+Task 3.1 & \url{http://13.55.158.77/} \\
 \hline
 ALB DNS Name & \url{http://task-3-3-alb-2099008439.ap-southeast-2.elb.amazonaws.com/}\\
 \hline
@@ -130,7 +132,7 @@ To securely login into my EC2 instances, I must generate an SSH key pair. The pr
 
 \subsubsection{Compute Provisioning}
 
-I launched a new EC2 instance called \texttt{Task 3.1}. This instance runs Amazon Linux 2023, uses a \texttt{t3.micro} instance time to remain eligible for the free tier, and is configured with the previously generated key pair.
+I launched a new EC2 instance called \texttt{Task 3.1}. This instance runs Amazon Linux 2023, uses a \texttt{t3.micro} instance type to remain eligible for the free tier, and is configured with the previously generated key pair.
 
 \begin{figure}[H]
 \centering
@@ -301,7 +303,7 @@ From the EC2 instance's command line, I established a connection to the RDS inst
 \caption{Connecting to the database from the EC2 instance's terminal.}
 \end{figure}
 
-Once I could connect to the database, I created a new database \texttt{wordpress\_db} to be used by my application. I then exited the DB connection, configured the \texttt[wg\_config.php] file with the required database information, including the database name, username, and password, along with the other necessary credentials. This allowed the WordPress application to connect to and use the configured database. Finally, I restarted the Apache web server and verified that the application has been successfully configured to use the database. As I had not installed the actual WordPress application by this point, the database displayed all empty entries.
+Once I could connect to the database, I created a new database \texttt{wordpress\_db} to be used by my application. I then exited the DB connection, configured the \texttt{wg-config.php} file with the required database information, including the database name, username, and password, along with the other necessary credentials. This allowed the WordPress application to connect to and use the configured database. Finally, I restarted the Apache web server and verified that the application has been successfully configured to use the database. As I had not installed the actual WordPress application by this point, the database displayed all empty entries.
 
 \begin{figure}[H]
 \centering
@@ -314,6 +316,10 @@ Once I could connect to the database, I created a new database \texttt{wordpress
 \vspace{-1em}
 \caption{Editing the database configurations and verifiying the connection to the RDS database.}
 \end{figure}
+
+I encountered an issue where the WordPress application displayed the error "Error establishing a database connection", even though I had verified that the database credentials in the \texttt{wg-config.php} file were correct. I determined the the issue was caused by RDS being configured to require encrypted (SSL) connection, while WordPress was attempting to connect without encryption. As a result, RDS rejected the connection. This was also evident in the earlier command I used to connect to the database, where I had to include the flags \texttt{--ssl-verify-server-cert} and \texttt{--ssl-ca=/etc/pki/rds/global-bundle.pem}. These flags told the MySQL client to use SSL and verify the RDS server's SSL certificate using the specified certificate.
+
+I resolved the issue by configuring WordPress to request an SSL connection by adding \texttt{define('MYSQL\_CLIENT\_FLAGS', MYSQLI\_CLIENT\_SSL);} to \texttt{wp-config.php}.
 
 \begin{figure}[H]
 \centering
@@ -330,7 +336,7 @@ I started by creating a new S3 bucket with the name \texttt{swe40006-105551765-b
 \centering
 \includegraphics[scale=0.4]{images/2_create_bucket.jpg}
 \vspace{-1em}
-\caption{The application now shows the WordPress installation form, which means the database has successfully been connected.}
+\caption{Creating a new S3 bucket.}
 \end{figure}
 
 I also created a new IAM role allowing full access to S3. This role is then attached to my EC2 instance so that the server could read and write files to the S3 bucket.
@@ -385,7 +391,7 @@ Once the files were removed, accessing my website displayed only an "It works!" 
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.4]{images/2_server_restored.jpg}
+\includegraphics[scale=0.4]{images/2_server_rmed.jpg}
 \vspace{-1em}
 \caption{The WordPress application had been deleted.}
 \end{figure}
@@ -566,7 +572,7 @@ I investigated a wide range of potential issues, checking installed dependencies
 \caption{An initial attempt to connect to the RDS database timed out. The second attempt showed a successful connection after the problem had been fixed.}
 \end{figure}
 
-The RDS instance's security group was allowing MySQL traffic on port 3306 from another security group that was not configured with the applications instances. This was fixed by adding the correct inbound security rule.
+The RDS instance's security group was only allowing MySQL traffic on port 3306 from my original EC2 instance instead of the security group that was attached to all instances. This was fixed by adding the correct inbound security rule.
 
 \begin{figure}[H]
 \centering
@@ -653,7 +659,7 @@ The next step was creating the CloudWatch alarm itself. I set up an alarm on the
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.4]{images/4_select_metric.jpg}
+\includegraphics[scale=0.4]{images/4_config_metric.jpg}
 \vspace{-1em}
 \caption{Configuring the threshold for the metric to "greater than 70\%".}
 \end{figure}
@@ -678,7 +684,7 @@ The alarm has been created. The graph displays the defined threshold as a red do
 
 \subsubsection{Secure Management via SSM}
 
-The goal of this task is to securely access the backend EC2 instances without requiring a private key file or exposting port 22 to the public internet. The first step was to ensure that the EC2 instances had access to the AWS Systems Manager service. This was achieved by attaching the \texttt{AmazonSSMManagedInstanceCore} to their IAM role.
+The goal of this task is to securely access the backend EC2 instances without requiring a private key file or exposing port 22 to the public internet. The first step was to ensure that the EC2 instances had access to the AWS Systems Manager service. This was achieved by attaching the \texttt{AmazonSSMManagedInstanceCore} to their IAM role.
 
 I attached this policy to the existing IAM role that was already associated with my EC2 instances. 
 
@@ -733,6 +739,10 @@ I then established a connection to the EC2 instance using the Session Manager th
 \end{figure}
 
 \section{Self-troubleshooting}
+
+Overall, the implementation of this deployment task was relatively straightforward. The main challenges I encountered involved resolving the database connection issue in Task 3.2 and diagnosing the unhealthy instances in Task 3.3.
+
+Troubleshooting the database connection was relatively simple because the root cause was easier to identify, and the solution only required an additional line of code. Meanwhile, resolving the unhealthy instances was much more challenging because there were so many potential causes. This meant that I had to verify several parts of the infrastructure and rebuild several components multiple times to ensure that everything was configured correctly before narrowing the problem down to a misconfigured security group rule. Eventually, I was able to identify the root cause and resolve the issue succesfully.
 
 % References
 % \printbibliography
